@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import PropTypes from "prop-types";
 import "react-toastify/dist/ReactToastify.css";
-import { requestLogin } from "../../utils/auth";
+import { requestLogin, saveToken } from "../../utils/auth";
 
-export default function Login() {
+export default function Login({ onSuccess }) {
   const [form, setForm] = useState({});
   const [status, setStatus] = useState("idle");
   const handleChangeValue = (e) => {
@@ -21,6 +22,8 @@ export default function Login() {
     if (!response) {
       return toast.error("Email hoặc mật khẩu không chính xác");
     }
+    saveToken(response);
+    onSuccess(response);
   };
   return (
     <div className="w-50 mx-auto py-3">
@@ -69,3 +72,6 @@ export default function Login() {
     </div>
   );
 }
+Login.propTypes = {
+  onSuccess: PropTypes.func,
+};
