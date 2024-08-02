@@ -15,8 +15,9 @@ export default function Profile({ onSuccess }) {
       //Refresh Token ==> Hướng dẫn sau
       //Call API Logout
       logout();
+      onSuccess(true);
     }
-  }, []);
+  }, [onSuccess]);
   useEffect(() => {
     getProfile();
   }, [getProfile]);
