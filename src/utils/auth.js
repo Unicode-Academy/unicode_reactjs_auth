@@ -4,34 +4,13 @@ export const requestLogin = async (data) => {
   const response = await httpClient.post("/auth/login", data);
   if (response.ok) {
     saveToken(response.data);
-    httpClient.setToken(response.data.access_token);
+    // httpClient.setToken(response.data.access_token);
     return response.data;
   }
   return false;
 };
 
 export const getUser = async () => {
-  // const { access_token: accessToken } = getToken();
-  // if (accessToken) {
-  //   const response = await fetch(
-  //     `${import.meta.env.VITE_SERVER_API}/auth/profile`,
-  //     {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     }
-  //   );
-  //   if (response.ok) {
-  //     return response.json();
-  //   } else {
-  //     const newToken = await requestRefreshToken();
-  //     if (newToken) {
-  //       saveToken(newToken);
-  //       return getUser();
-  //     }
-  //   }
-  // }
-  // return false;
   const response = await httpClient.get("/auth/profile");
   if (response.ok) {
     return response.data;
@@ -46,18 +25,11 @@ export const logout = () => {
 export const requestRefreshToken = async () => {
   const { refresh_token: refreshToken } = getToken();
   if (refreshToken) {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_API}/auth/refresh-token`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-      }
-    );
+    const response = await httpClient.post("/auth/refresh-token", {
+      refreshToken,
+    });
     if (response.ok) {
-      return response.json();
+      return response.data;
     }
   }
   return false;
