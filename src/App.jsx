@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import Login from "./components/Auth/Login";
-import { getToken } from "./utils/auth";
+import { getToken } from "./utils/token";
 import { useLayoutEffect, useState } from "react";
 import Dashboard from "./components/Dashboard/Dashboard";
 export default function App() {

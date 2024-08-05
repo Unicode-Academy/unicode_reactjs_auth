@@ -1,55 +1,40 @@
-import HttpClient from "./httpClient";
-const httpClient = new HttpClient({
-  serverApi: import.meta.env.VITE_SERVER_API,
-});
+import { httpClient } from "../configs/client";
+import { getToken, removeToken, saveToken } from "./token";
 export const requestLogin = async (data) => {
   const response = await httpClient.post("/auth/login", data);
   if (response.ok) {
+    saveToken(response.data);
+    httpClient.setToken(response.data.access_token);
     return response.data;
   }
   return false;
 };
 
-export const saveToken = (token) => {
-  localStorage.setItem("authToken", JSON.stringify(token));
-};
-export const getToken = () => {
-  try {
-    const token = JSON.parse(localStorage.getItem("authToken"));
-    if (token.access_token && token.refresh_token) {
-      return token;
-    }
-    throw new Error("Token invalid");
-  } catch (e) {
-    return false;
-  }
-};
-
-export const removeToken = () => {
-  localStorage.removeItem("authToken");
-};
-
 export const getUser = async () => {
-  const { access_token: accessToken } = getToken();
-  if (accessToken) {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_API}/auth/profile`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    if (response.ok) {
-      return response.json();
-    } else {
-      const newToken = await requestRefreshToken();
-
-      if (newToken) {
-        saveToken(newToken);
-        return getUser();
-      }
-    }
+  // const { access_token: accessToken } = getToken();
+  // if (accessToken) {
+  //   const response = await fetch(
+  //     `${import.meta.env.VITE_SERVER_API}/auth/profile`,
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //       },
+  //     }
+  //   );
+  //   if (response.ok) {
+  //     return response.json();
+  //   } else {
+  //     const newToken = await requestRefreshToken();
+  //     if (newToken) {
+  //       saveToken(newToken);
+  //       return getUser();
+  //     }
+  //   }
+  // }
+  // return false;
+  const response = await httpClient.get("/auth/profile");
+  if (response.ok) {
+    return response.data;
   }
   return false;
 };

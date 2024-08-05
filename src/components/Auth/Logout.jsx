@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { removeToken } from "../../utils/auth";
+import { removeToken } from "../../utils/token";
 export default function Logout({ children, onSuccess }) {
   const handleLogout = () => {
     removeToken();

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import PropTypes from "prop-types";
 import "react-toastify/dist/ReactToastify.css";
-import { requestLogin, saveToken } from "../../utils/auth";
+import { requestLogin } from "../../utils/auth";
 
 export default function Login({ onSuccess }) {
   const [form, setForm] = useState({});
@@ -22,7 +22,6 @@ export default function Login({ onSuccess }) {
     if (!response) {
       return toast.error("Email hoặc mật khẩu không chính xác");
     }
-    saveToken(response);
     onSuccess(response);
   };
   return (

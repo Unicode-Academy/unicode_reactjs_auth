@@ -1,5 +1,6 @@
 export default class HttpClient {
   #serverApi = null;
+  #token = null;
   constructor({ serverApi }) {
     this.#serverApi = serverApi;
   }
@@ -17,6 +18,9 @@ export default class HttpClient {
       options.body = JSON.stringify(body);
       options.headers["Content-Type"] = "application/json";
     }
+    if (this.#token) {
+      options.headers["Authorization"] = `Bearer ${this.#token}`;
+    }
     try {
       const response = await fetch(requestUrl, options);
       if (response.ok) {
@@ -27,6 +31,11 @@ export default class HttpClient {
       return e;
     }
   }
+
+  setToken(token) {
+    this.#token = token;
+  }
+
   get(url, headers = {}) {
     return this.#send(url, "GET", null, headers);
   }
