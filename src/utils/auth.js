@@ -1,16 +1,17 @@
 import { httpClient } from "../configs/client";
 import { getToken, removeToken } from "./token";
+import { axiosClient } from "../configs/axios";
 export const requestLogin = async (data) => {
-  const response = await httpClient.post("/auth/login", data);
-  if (response.ok) {
+  const response = await axiosClient.post("/auth/login", data);
+  if (response.status === 201) {
     return response.data;
   }
   return false;
 };
 
 export const getUser = async () => {
-  const response = await httpClient.get("/auth/profile");
-  if (response.ok) {
+  const response = await axiosClient.get("/auth/profile");
+  if (response.status === 200) {
     return response.data;
   }
   return false;
