@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getToken, saveToken } from "../utils/token";
-
+import { requestRefreshToken } from "../utils/auth";
+let refreshTokenPromise = null;
 export const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_SERVER_API,
   headers: {
@@ -31,9 +32,24 @@ axiosClient.interceptors.response.use(
     ) {
       saveToken(response.data);
     }
+
     return response;
   },
-  function (error) {
+  async function (error) {
+    if (
+      error.response.status === 401 &&
+      !error.request.responseURL.includes("/auth/refresh-token")
+    ) {
+      if (!refreshTokenPromise) {
+        refreshTokenPromise = requestRefreshToken();
+      }
+      const token = await refreshTokenPromise;
+      if (token) {
+        saveToken(token);
+        const config = error.response.config;
+        return axiosClient(config);
+      }
+    }
     return Promise.reject(error);
   }
 );

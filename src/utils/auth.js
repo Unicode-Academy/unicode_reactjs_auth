@@ -1,4 +1,4 @@
-import { httpClient } from "../configs/client";
+// import { httpClient } from "../configs/client";
 import { getToken, removeToken } from "./token";
 import { axiosClient } from "../configs/axios";
 export const requestLogin = async (data) => {
@@ -10,11 +10,14 @@ export const requestLogin = async (data) => {
 };
 
 export const getUser = async () => {
-  const response = await axiosClient.get("/auth/profile");
-  if (response.status === 200) {
-    return response.data;
+  try {
+    const response = await axiosClient.get("/auth/profile");
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch {
+    return false;
   }
-  return false;
 };
 
 export const logout = () => {
@@ -24,10 +27,10 @@ export const logout = () => {
 export const requestRefreshToken = async () => {
   const { refresh_token: refreshToken } = getToken();
   if (refreshToken) {
-    const response = await httpClient.post("/auth/refresh-token", {
+    const response = await axiosClient.post("/auth/refresh-token", {
       refreshToken,
     });
-    if (response.ok) {
+    if (response.status === 201) {
       return response.data;
     }
   }
