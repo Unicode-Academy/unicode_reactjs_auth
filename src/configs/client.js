@@ -1,7 +1,7 @@
 import { requestRefreshToken } from "../utils/auth";
 import HttpClient from "../utils/httpClient";
 import { getToken, saveToken } from "../utils/token";
-
+let refreshTokenPromise = null;
 const httpClient = new HttpClient({
   serverApi: import.meta.env.VITE_SERVER_API,
 });
@@ -14,14 +14,22 @@ httpClient.request((config) => {
   return config;
 });
 
-httpClient.response((response) => {
-  if (response.status === 401 && !response.url.includes("refresh-token")) {
-    return requestRefreshToken().then((token) => {
-      if (token) {
-        saveToken(token);
-        return httpClient;
-      }
-    });
+httpClient.response(async (response) => {
+  if (response.url.includes("/auth/login") && response.ok) {
+    saveToken(response.data);
+  }
+  if (
+    response.status === 401 &&
+    !response.url.includes("/auth/refresh-token")
+  ) {
+    if (!refreshTokenPromise) {
+      refreshTokenPromise = requestRefreshToken();
+    }
+    const newToken = await refreshTokenPromise;
+    if (newToken) {
+      saveToken(newToken);
+      return httpClient;
+    }
   }
   return response;
 });

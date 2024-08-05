@@ -24,7 +24,12 @@ export default function Profile({ onSuccess }) {
   return (
     <div className="w-50 mx-auto">
       <ul className="d-flex list-unstyled gap-2 justify-content-center align-items-center">
-        <li>Chào: {isLoading ? "Loading..." : user.name}</li>
+        <li>
+          Chào: {isLoading ? "Loading..." : user.name}{" "}
+          <span style={{ cursor: "pointer" }} onClick={() => getProfile()}>
+            Refresh
+          </span>
+        </li>
         <li>
           <a href="#" className="btn btn-link p-0">
             Tài khoản

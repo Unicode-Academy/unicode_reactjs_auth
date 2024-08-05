@@ -1,10 +1,8 @@
 import { httpClient } from "../configs/client";
-import { getToken, removeToken, saveToken } from "./token";
+import { getToken, removeToken } from "./token";
 export const requestLogin = async (data) => {
   const response = await httpClient.post("/auth/login", data);
   if (response.ok) {
-    saveToken(response.data);
-    // httpClient.setToken(response.data.access_token);
     return response.data;
   }
   return false;

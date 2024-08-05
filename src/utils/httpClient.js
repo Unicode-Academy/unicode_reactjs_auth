@@ -1,6 +1,5 @@
 export default class HttpClient {
   #serverApi = null;
-  #request = null;
   #requestConfig = null;
   #responseConfig = null;
   constructor({ serverApi }) {
@@ -12,7 +11,7 @@ export default class HttpClient {
     if (this.#serverApi) {
       requestUrl = `${this.#serverApi}${url}`;
     }
-    const options = {
+    let options = {
       method,
       headers,
     };
@@ -20,23 +19,36 @@ export default class HttpClient {
       options.body = JSON.stringify(body);
       options.headers["Content-Type"] = "application/json";
     }
-    this.#request = JSON.parse(JSON.stringify(options));
-    const requestInit = this.#requestConfig(this.#request);
+    if (
+      typeof this.#requestConfig === "function" &&
+      this.#requestConfig(this.#copyObject(options))
+    ) {
+      options = this.#requestConfig(this.#copyObject(options));
+    }
 
     try {
-      let response = await fetch(requestUrl, requestInit);
-      response = await this.#responseConfig(response);
-
-      if (response instanceof HttpClient) {
-        return this.#send(url, method, body, headers);
-      }
+      let response = await fetch(requestUrl, options);
       if (response.ok) {
         response.data = await response.json();
+      }
+      if (
+        typeof this.#responseConfig === "function" &&
+        this.#responseConfig(response)
+      ) {
+        response = await this.#responseConfig(response);
+
+        if (response instanceof HttpClient) {
+          return this.#send(url, method, body, headers);
+        }
       }
       return response;
     } catch (e) {
       return e;
     }
+  }
+
+  #copyObject(obj) {
+    return JSON.parse(JSON.stringify(obj));
   }
 
   request(callback) {
