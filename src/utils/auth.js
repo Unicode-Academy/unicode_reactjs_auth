@@ -6,7 +6,6 @@ export const requestLogin = async (data) => {
   if (response.status === 201) {
     return response.data;
   }
-  return false;
 };
 
 export const getUser = async () => {
